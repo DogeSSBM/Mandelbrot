@@ -5,8 +5,8 @@
 #include<stdio.h>
 
 // window size macros
-#define WINDX 1280
-#define WINDY 720
+#define WINDX 1792
+#define WINDY 1008
 #define WINDXMID (WINDX / 2)
 #define WINDYMID (WINDY / 2)
 

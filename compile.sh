@@ -1,1 +1,1 @@
-gcc mandelbrot.c -lSDL2 -o mandelbrot
+gcc mandelbrot.c -lSDL2 -lm -o mandelbrot

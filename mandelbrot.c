@@ -6,7 +6,7 @@
 #include<stdio.h>
 #include"Doge_SDL.h"
 
-const long unsigned int ITER = 1000;
+const long unsigned int ITER = 2000;
 
 #define REALMIN -2.0f
 #define REALMAX 1.0f
@@ -20,49 +20,49 @@ const long unsigned int ITER = 1000;
 #define REALSTEP (REALLEN / WINDX)
 #define IMAGSTEP (IMAGLEN / WINDY)
 
-// iterates c for up to 20 times as long as c remains bounded
-bool isInSet(float complex c)
+// returns the number of iterations completed while c remained bounded
+// uses absolute distance from origin for bailout. (better accuracy, slower)
+long unsigned int iterate(float complex c)
 {
-  float complex z = 0;
+  float dist = 0.0f;
+  float complex z = 0.0f;
   for(long unsigned int x=0; x<ITER; x++){
     z = z * z + c;
-    if(crealf(z)>2.0f || cimagf(z)>2.0f){
-      return false;
+    dist = pow(crealf(z), 2.0f) + pow(cimagf(z), 2.0f);
+    if(dist > 4.0f){
+      return x;
     }
   }
-  return true;
+  return ITER;
+}
+
+void idle()
+{
+  while(run){
+    delay(5);
+    events();
+  }
 }
 
 int main()
 {
   init();
+
   for(uint y=0; y<WINDY && run; y++){
     for(uint x=0; x<WINDX && run; x++){
       events();
       float complex n = (REALMIN+(x*REALSTEP))+((IMAGMIN+(y*IMAGSTEP))*I);
-      if(isInSet(n)){
-        setColor(255, 255, 255);
-      }
-      else{
-        setColor(0, 0, 0);
-      }
+      u8 val = ITER - iterate(n);
+      setColor(val, val, val);
       drawPixel(x, y);
     }
     printf("Y %d done...\n", y);
   }
+
   printf("FINISHED!\n");
   drawFrame();
-  while(run){
-    delay(5);
-    /*for(float imag = IMAGMIN; imag < IMAGMAX; imag += IMAGSTEP){
-      for(float real = REALMIN; real < REALMAX; real += REALSTEP){
-        float complex num = real + imag * I;
+  idle();
 
-
-      }
-    }*/
-    events();
-  }
   quit();
   return 0;
 }
